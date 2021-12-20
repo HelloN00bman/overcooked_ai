@@ -1590,9 +1590,6 @@ class OvercookedGridworld(object):
         8/6. Serve soup
         7. Shared counter usage
 
-        6. Handoff time of object picked up <= self mean
-        7. Number of touches on onion or dish == len unique players
-
         """
         pot_states = self.get_pot_states(new_state)
         ready_pots = pot_states["tomato"]["ready"] + pot_states["onion"]["ready"]
