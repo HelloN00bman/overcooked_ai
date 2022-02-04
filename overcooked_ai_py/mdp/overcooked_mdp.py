@@ -82,6 +82,8 @@ class ObjectState(object):
         return ObjectState(**new_obj_dict)
 
 
+
+
 class PlayerState(object):
     """
     State of a player in OvercookedGridworld.
@@ -292,6 +294,9 @@ class OvercookedState(object):
         """
         dummy_pos_and_or = [(pos, Direction.NORTH) for pos in player_positions]
         return OvercookedState.from_players_pos_and_or(dummy_pos_and_or, order_list)
+
+
+
 
     def deepcopy(self):
         return OvercookedState(
@@ -1344,6 +1349,9 @@ class OvercookedGridworld(object):
                         self.location_to_item_uid[i_pos] = placed_item_uid
                         self.item_uid_to_location[placed_item_uid] = i_pos
                         self.player_idx_to_item_holding_uid[player_idx] = None
+
+                        print("object on counter")
+
                     except:
                         pass
 
@@ -1387,6 +1395,7 @@ class OvercookedGridworld(object):
                         self.location_to_item_uid[i_pos] = None
                         self.item_uid_to_location[picked_item_uid] = None
                         self.player_idx_to_item_holding_uid[player_idx] = picked_item_uid
+                        print("object picked up on counter.")
                     except:
                         pass
 
@@ -1416,6 +1425,7 @@ class OvercookedGridworld(object):
                     self.item_tracking_dict[self.object_uid_counter] = new_obj_record
                     self.player_idx_to_item_holding_uid[player_idx] = self.object_uid_counter
                     self.active_item_uids.append(self.object_uid_counter)
+                    print("onion picked up on dispenser.")
                 except:
                     pass
 
@@ -1469,10 +1479,12 @@ class OvercookedGridworld(object):
                 self.item_tracking_dict[self.object_uid_counter] = new_obj_record
                 self.player_idx_to_item_holding_uid[player_idx] = self.object_uid_counter
                 self.active_item_uids.append(self.object_uid_counter)
+                print("dish picked up on dispenser.")
 
             elif terrain_type == 'P' and player.has_object():
                 if player.get_object().name == 'dish' and new_state.has_object(i_pos):
                     # Action Type 6: Player picked up soup from pot with dish
+                    print("player picked up soup from pot with dish.")
                     obj = new_state.get_object(i_pos)
                     assert obj.name == 'soup', 'Object in pot was not soup'
                     _, num_items, cook_time = obj.state
@@ -1502,6 +1514,7 @@ class OvercookedGridworld(object):
                             self.player_idx_to_item_holding_uid[player_idx] = None
 
                             self.active_item_uids.remove(placed_item_uid)
+                            print("player placed onion in empty pot.")
                         except:
                             pass
 
@@ -1513,6 +1526,7 @@ class OvercookedGridworld(object):
                         assert obj.name == 'soup', 'Object in pot was not soup'
                         soup_type, num_items, cook_time = obj.state
                         if num_items < self.num_items_for_soup and soup_type == item_type:
+                            print("player placed onion in partially full pot.")
                             player.remove_object()
                             obj.state = (soup_type, num_items + 1, 0)
                             shaped_reward += self.reward_shaping_params["ONION_IN_PARTIAL_POT_REWARD"]
@@ -1526,6 +1540,7 @@ class OvercookedGridworld(object):
                             full_pots = cooking_pots + ready_pots
 
                             #### IF both pots full
+                            print("BOTH POTS ARE FULL.")
                             # if (4, 1) in full_pots and (3, 0) in full_pots:
                             if len(full_pots) > 1:
                                 shaped_reward += self.reward_shaping_params["BOTH_POTS_FULL_REWARD"]
@@ -1555,6 +1570,7 @@ class OvercookedGridworld(object):
 
                     # Dish served is no longer active
                     try:
+                        print("player delivered soup.")
                         placed_item_uid = self.player_idx_to_item_holding_uid[player_idx]
 
                         self.item_tracking_dict[placed_item_uid]['player_holding'] = None
